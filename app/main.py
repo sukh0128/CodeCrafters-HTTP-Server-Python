@@ -17,7 +17,7 @@ def main():
     elif endpoint == "/":
         response += f" {OK_200}\r\n\r\n"
     elif endpoint == "/user-agent":
-        body = data[3].split(" ")[1]
+        body = data[2].split(" ")[1]
         response += f" {OK_200}\r\n{CONTENT_TYPE}\r\n{CONTENT_LENGTH}{len(body)}\r\n\r\n{body}"
     else:
         response += f" {NOTFOUND_404}\r\n\r\n"
