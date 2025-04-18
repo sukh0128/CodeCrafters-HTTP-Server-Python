@@ -12,12 +12,12 @@ def main():
     response = BASE
     endpoint = data[0].split(" ")[1]
     if endpoint.startswith("/echo/"):
-        body = data[1].split("/")[2]
+        body = data[0].split(" ")[1].split("/")[2]
         response += f" {OK_200}\r\n{CONTENT_TYPE}\r\n{CONTENT_LENGTH}{len(body)}\r\n\r\n{body}"
     elif endpoint == "/":
         response += f" {OK_200}\r\n\r\n"
-    elif endpoint == "/user_agent":
-        body = data[2].split(" ").split(" ")[1]
+    elif endpoint == "/user-agent":
+        body = data[3].split(" ")[1]
         response += f" {OK_200}\r\n{CONTENT_TYPE}\r\n{CONTENT_LENGTH}{len(body)}\r\n\r\n{body}"
     else:
         response += f" {NOTFOUND_404}\r\n\r\n"
