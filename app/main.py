@@ -7,7 +7,7 @@ def main():
     data = conn.recv(1024).decode().split(" ")
     if data[1].startswith("/echo/"):
         body = data[1].split("/")[2]
-        response = f"HTTP/1.1 200 OK\r\n\r\nContent-Type: text/plain\r\nContent-Length: {len(body)}\r\n{body}"
+        response = f"HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\nContent-Length: {len(body)}\r\n{body}"
         conn.sendall(response.encode())
     else:
         conn.sendall(b"HTTP/1.1 404 Not Found\r\n\r\n")
