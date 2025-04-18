@@ -1,27 +1,7 @@
-import socket  # noqa: F401
-BASE = "HTTP/1.1"
-OK_200 = "200 OK"
-NOTFOUND_404 = "404 Not Found"
-CONTENT_TYPE = "Content-Type: text/plain"
-CONTENT_LENGTH = "Content-Length: "
-
+from app.server import TCPServer
 def main():
-    server_socket = socket.create_server(("localhost", 4221), reuse_port=True)
-    conn, addr = server_socket.accept()    
-    data = conn.recv(1024).decode().split("\r\n")
-    response = BASE
-    endpoint = data[0].split(" ")[1]
-    if endpoint.startswith("/echo/"):
-        body = data[0].split(" ")[1].split("/")[2]
-        response += f" {OK_200}\r\n{CONTENT_TYPE}\r\n{CONTENT_LENGTH}{len(body)}\r\n\r\n{body}"
-    elif endpoint == "/":
-        response += f" {OK_200}\r\n\r\n"
-    elif endpoint == "/user-agent":
-        body = data[2].split(" ")[1]
-        response += f" {OK_200}\r\n{CONTENT_TYPE}\r\n{CONTENT_LENGTH}{len(body)}\r\n\r\n{body}"
-    else:
-        response += f" {NOTFOUND_404}\r\n\r\n"
-    conn.sendall(response.encode())
-        
+    tcp = TCPServer("localhost", 4221)
+    tcp.start_server()
+
 if __name__ == "__main__":
     main()
