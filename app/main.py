@@ -16,7 +16,7 @@ def main():
     elif data[1] == "/":
         response += f" {OK_200}\r\n\r\n"
     else:
-        response += " {NOTFOUND_404}\r\n\r\n"
+        response += f" {NOTFOUND_404}\r\n\r\n"
     conn.sendall(response.encode())
         
 if __name__ == "__main__":
