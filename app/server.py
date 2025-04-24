@@ -1,12 +1,13 @@
 import socket
 import threading
+import sys
 
 BASE = "HTTP/1.1"
 OK_200 = "200 OK"
 NOTFOUND_404 = "404 Not Found"
-CONTENT_TYPE = "Content-Type: text/plain"
+CONTENT_TYPE_TEXT = "Content-Type: text/plain"
+CONTENT_TYPE_OCTET = "Content-Type: application/octet-stream"
 CONTENT_LENGTH = "Content-Length: "
-
 class TCPServer:
     def __init__(self, host:str, port:int) -> None:
         self.host = host
@@ -24,12 +25,26 @@ class TCPServer:
         endpoint = data[0].split(" ")[1]
         if endpoint.startswith("/echo/"):
             body = data[0].split(" ")[1].split("/")[2]
-            response += f" {OK_200}\r\n{CONTENT_TYPE}\r\n{CONTENT_LENGTH}{len(body)}\r\n\r\n{body}"
+            response += f" {OK_200}\r\n{CONTENT_TYPE_TEXT}\r\n{CONTENT_LENGTH}{len(body)}\r\n\r\n{body}"
+        elif endpoint.startswith("/files/"):
+            fileName = data[0].split(" ")[1].split("/")[2]
+            file_directory = f"/{sys.argv[2]}"
+            try:
+                with open(f"{file_directory}/{fileName}", "r") as file:
+                    content = file.read()
+                    size = len(content)
+                    response += f" {OK_200}\r\n{CONTENT_TYPE_OCTET}\r\n{CONTENT_LENGTH}{size}\r\n\r\n{content}"
+            except FileNotFoundError:
+                response += f" {NOTFOUND_404}\r\n\r\n"
+            else:
+                file.close()
+
+
         elif endpoint == "/":
             response += f" {OK_200}\r\n\r\n"
         elif endpoint == "/user-agent":
             body = data[2].split(" ")[1]
-            response += f" {OK_200}\r\n{CONTENT_TYPE}\r\n{CONTENT_LENGTH}{len(body)}\r\n\r\n{body}"
+            response += f" {OK_200}\r\n{CONTENT_TYPE_TEXT}\r\n{CONTENT_LENGTH}{len(body)}\r\n\r\n{body}"
         else:
             response += f" {NOTFOUND_404}\r\n\r\n"
         client_socket.sendall(response.encode())
