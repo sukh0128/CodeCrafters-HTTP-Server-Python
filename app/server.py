@@ -4,6 +4,7 @@ import sys
 
 BASE = "HTTP/1.1"
 OK_200 = "200 OK"
+CREATED_201 = "201 Created"
 NOTFOUND_404 = "404 Not Found"
 CONTENT_TYPE_TEXT = "Content-Type: text/plain"
 CONTENT_TYPE_OCTET = "Content-Type: application/octet-stream"
@@ -22,24 +23,30 @@ class TCPServer:
     def handle_request(self, client_socket: socket.socket) -> None: 
         data = client_socket.recv(1024).decode().split("\r\n")
         response = BASE
-        endpoint = data[0].split(" ")[1]
+        request = data[0].split(" ")
+        http_method = request[0]
+        endpoint = request[1]
         if endpoint.startswith("/echo/"):
-            body = data[0].split(" ")[1].split("/")[2]
+            body = endpoint.split("/")[2]
             response += f" {OK_200}\r\n{CONTENT_TYPE_TEXT}\r\n{CONTENT_LENGTH}{len(body)}\r\n\r\n{body}"
         elif endpoint.startswith("/files/"):
             fileName = data[0].split(" ")[1].split("/")[2]
             file_directory = f"/{sys.argv[2]}"
             try:
-                with open(f"{file_directory}/{fileName}", "r") as file:
-                    content = file.read()
-                    size = len(content)
-                    response += f" {OK_200}\r\n{CONTENT_TYPE_OCTET}\r\n{CONTENT_LENGTH}{size}\r\n\r\n{content}"
+                if http_method == "GET":
+                    with open(f"{file_directory}/{fileName}", "r" ) as file:
+                        content = file.read()
+                        size = len(content)
+                        response += f" {OK_200}\r\n{CONTENT_TYPE_OCTET}\r\n{CONTENT_LENGTH}{size}\r\n\r\n{content}"
+                elif http_method == "POST":
+                    body = data[5]
+                    with open(f"{file_directory}/{fileName}", "w") as file:
+                        file.write(body)
+                        response += f" {CREATED_201}\r\n\r\n"
             except FileNotFoundError:
                 response += f" {NOTFOUND_404}\r\n\r\n"
             else:
                 file.close()
-
-
         elif endpoint == "/":
             response += f" {OK_200}\r\n\r\n"
         elif endpoint == "/user-agent":
