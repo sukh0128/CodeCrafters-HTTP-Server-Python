@@ -1,9 +1,4 @@
-import os
-MODE = os.getenv("MODE", "debug")
-if MODE == "debug":
-    from app.server import TCPServer
-else:
-    from server import TCPServer
+from app.server import TCPServer
 
 def main():
     tcp = TCPServer("localhost", 4221)

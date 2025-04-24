@@ -26,6 +26,7 @@ class TCPServer:
         request = data[0].split(" ")
         http_method = request[0]
         endpoint = request[1]
+        
         if endpoint.startswith("/echo/"):
             body = endpoint.split("/")[2]
             response += f" {OK_200}\r\n{CONTENT_TYPE_TEXT}\r\n{CONTENT_LENGTH}{len(body)}\r\n\r\n{body}"
