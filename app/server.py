@@ -31,14 +31,10 @@ class TCPServer:
         
         if endpoint.startswith("/echo/"):
             body = endpoint.split("/")[2]
-            index = -1
-            try:
-                index = data.index("Accept-Encoding: gzip")
-            except ValueError:
-                index = -1
-            if index != -1:
-                if data[index].split(": ")[1] == ENCODING_SCHEME:
-                    response += f" {OK_200}\r\n{CONTENT_ENCODING}{ENCODING_SCHEME}\r\n{CONTENT_TYPE_TEXT}\r\n{CONTENT_LENGTH}{len(body)}\r\n\r\n{body}"
+            encodings = next((x.split(" ", 1)[1] for x in data if x.startswith("Accept-Encoding: ")), None)
+                
+            if encodings and ENCODING_SCHEME in encodings:
+                response += f" {OK_200}\r\n{CONTENT_ENCODING}{ENCODING_SCHEME}\r\n{CONTENT_TYPE_TEXT}\r\n{CONTENT_LENGTH}{len(body)}\r\n\r\n{body}"
             else:
                 response += f" {OK_200}\r\n{CONTENT_TYPE_TEXT}\r\n{CONTENT_LENGTH}{len(body)}\r\n\r\n{body}"
         elif endpoint.startswith("/files/"):
