@@ -67,5 +67,4 @@ class TCPServer:
             response += f" {NOTFOUND_404}\r\n\r\n"
         body = body.encode("utf-8") if type(body) == str else body
         client_socket.sendall(response.encode("utf-8")+body if body else response.encode("utf-8"))
-        client_socket.close()
         
