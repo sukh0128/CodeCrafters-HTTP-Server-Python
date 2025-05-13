@@ -1,6 +1,8 @@
+from base64 import decode, encode
 import socket
 import threading
 import sys
+import gzip
 
 BASE = "HTTP/1.1"
 OK_200 = "200 OK"
@@ -28,15 +30,16 @@ class TCPServer:
         request = data[0].split(" ")
         http_method = request[0]
         endpoint = request[1]
-        
+        body = None
         if endpoint.startswith("/echo/"):
             body = endpoint.split("/")[2]
             encodings = next((x.split(" ", 1)[1] for x in data if x.startswith("Accept-Encoding: ")), None)
                 
             if encodings and ENCODING_SCHEME in encodings:
-                response += f" {OK_200}\r\n{CONTENT_ENCODING}{ENCODING_SCHEME}\r\n{CONTENT_TYPE_TEXT}\r\n{CONTENT_LENGTH}{len(body)}\r\n\r\n{body}"
+                body = gzip.compress(body.encode('utf-8'))
+                response += f" {OK_200}\r\n{CONTENT_ENCODING}{ENCODING_SCHEME}\r\n{CONTENT_TYPE_TEXT}\r\n{CONTENT_LENGTH}{len(body)}\r\n\r\n"
             else:
-                response += f" {OK_200}\r\n{CONTENT_TYPE_TEXT}\r\n{CONTENT_LENGTH}{len(body)}\r\n\r\n{body}"
+                response += f" {OK_200}\r\n{CONTENT_TYPE_TEXT}\r\n{CONTENT_LENGTH}{len(body)}\r\n\r\n"
         elif endpoint.startswith("/files/"):
             fileName = data[0].split(" ")[1].split("/")[2]
             file_directory = f"/{sys.argv[2]}"
@@ -59,9 +62,10 @@ class TCPServer:
             response += f" {OK_200}\r\n\r\n"
         elif endpoint == "/user-agent":
             body = data[2].split(" ")[1]
-            response += f" {OK_200}\r\n{CONTENT_TYPE_TEXT}\r\n{CONTENT_LENGTH}{len(body)}\r\n\r\n{body}"
+            response += f" {OK_200}\r\n{CONTENT_TYPE_TEXT}\r\n{CONTENT_LENGTH}{len(body)}\r\n\r\n"
         else:
             response += f" {NOTFOUND_404}\r\n\r\n"
-        client_socket.sendall(response.encode())
+        body = body.encode("utf-8") if type(body) == str else body
+        client_socket.sendall(response.encode("utf-8")+body if body else response.encode("utf-8"))
         client_socket.close()
         
