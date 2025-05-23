@@ -1,6 +1,0 @@
----
-description: 
-globs: 
-alwaysApply: false
----
-This is an HTTP server implementation in Python. the [main.py](mdc:app/main.py) runs the application and all of the logic is in @server.py. Use @config.json to store any static values and variables.
