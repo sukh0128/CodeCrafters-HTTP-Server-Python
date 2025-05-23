@@ -113,6 +113,7 @@ class TCPServer:
                 client_socket.sendall(response.encode("utf-8"))
         except BrokenPipeError:
             print("[WARNING] Client disconnected before response was sent.")
-        if connection_close:
-            client_socket.close()
+        finally:
+            if connection_close:
+                client_socket.close()
             
