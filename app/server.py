@@ -104,12 +104,15 @@ class TCPServer:
         if connection_close:
             response += f"\r\n{CONFIG[CONNECTION_CLOSE_KEY]}"
         response += "\r\n\r\n"
-        if body:
-            if type(body) == str:
-                body = body.encode("utf-8")
-            client_socket.sendall(response.encode("utf-8") + body)
-        else:
-            client_socket.sendall(response.encode("utf-8"))
+        try:
+            if body:
+                if isinstance(body, str):
+                    body = body.encode("utf-8")
+                client_socket.sendall(response.encode("utf-8") + body)
+            else:
+                client_socket.sendall(response.encode("utf-8"))
+        except BrokenPipeError:
+            print("[WARNING] Client disconnected before response was sent.")
         if connection_close:
             client_socket.close()
             
