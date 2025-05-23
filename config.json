@@ -1,0 +1,12 @@
+{
+    "BASE" : "HTTP/1.1",
+    "OK_200" : "200 OK",
+    "CREATED_201" : "201 Created",
+    "NOTFOUND_404" : "404 Not Found",
+    "CONTENT_TYPE_TEXT" : "Content-Type: text/plain",
+    "CONTENT_TYPE_OCTET" : "Content-Type: application/octet-stream",
+    "CONTENT_LENGTH" : "Content-Length: ",
+    "CONTENT_ENCODING" : "Content-Encoding: ",
+    "ENCODING_SCHEME" : "gzip",
+    "CONNECTION_CLOSE" : "Connection: close"
+}
