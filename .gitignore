@@ -155,3 +155,5 @@ cython_debug/
 # Cursor IDE
 .cursor/
 .cursor-config.son
+.cursor
+.cursor/rules
