@@ -105,6 +105,8 @@ class TCPServer:
             response += f"\r\n{CONFIG[CONNECTION_CLOSE_KEY]}"
         response += "\r\n\r\n"
         if body:
+            if type(body) == str:
+                body = body.encode("utf-8")
             client_socket.sendall(response.encode("utf-8") + body)
         else:
             client_socket.sendall(response.encode("utf-8"))
